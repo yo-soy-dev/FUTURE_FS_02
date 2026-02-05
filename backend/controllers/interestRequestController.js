@@ -21,7 +21,7 @@ export const createInterestRequest = async (req, res) => {
   const existing = await InterestRequest.findOne({
     email,
     inventory: inventoryId,
-    status: "Pending"
+    status: { $in: ["Pending", "Approved"] }
   });
 
   if (existing) {
@@ -59,7 +59,7 @@ export const markInterest = async (req, res) => {
   let request = await InterestRequest.findOne({
     email,
     inventory: inventoryId,
-    status: "Pending"
+    status: { $in: ["Pending", "Approved"] }
   });
 
   if (request) {

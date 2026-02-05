@@ -5,6 +5,7 @@ import AdminNavbar from "../components/AdminNavbar";
 import StatCard from "../components/StatCard";
 import RecentLeads from "../components/RecentLeads";
 import QuickActions from "../components/QuickActions";
+import toast from "react-hot-toast";
 
 
 export default function AdminDashboard() {
@@ -18,8 +19,13 @@ export default function AdminDashboard() {
   const [interestCount, setInterestCount] = useState(0);
 
 const fetchInterestStats = async () => {
+  try {
   const res = await api.get("/interest/pending");
   setInterestCount(res.data.length);
+  } catch (err) {
+      console.error(err);
+      toast.error("Failed to fetch pending interests!");
+    }
 };
 
 
@@ -35,8 +41,10 @@ const fetchInterestStats = async () => {
         contacted: leads.filter(l => l.status === "Contacted").length,
         converted: leads.filter(l => l.status === "Converted").length,
       });
+      toast.success("Dashboard data loaded!");
     } catch (err) {
       console.error(err);
+      toast.error("Failed to fetch leads!");
     } finally {
       setLoading(false);
     }
@@ -60,7 +68,7 @@ const fetchInterestStats = async () => {
             <p className="text-gray-500">Loading dashboard data...</p>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 <StatCard title="Total Leads" value={stats.total} color="blue" />
                 <StatCard title="New Leads" value={stats.newLeads} color="yellow" />
                 <StatCard title="Contacted" value={stats.contacted} color="purple" />

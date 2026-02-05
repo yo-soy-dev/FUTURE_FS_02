@@ -145,13 +145,13 @@ export const deleteLead = async (req, res) => {
       return res.status(404).json({ msg: "Lead not found" });
     }
 
-    await lead.deleteOne();
+    // await lead.deleteOne();
 
     // 🔥 Related InterestRequest reset कर दो
-    await InterestRequest.updateMany(
-      { email: lead.email, inventory: lead.source, status: "Approved" },
-      { status: "Pending" } // या अगर आप चाहते हैं "NotInterested" भी कर सकते हैं
-    );
+    await InterestRequest.deleteMany({
+      email: lead.email,
+      inventory: lead.source
+    });
 
     res.json({ msg: "Lead deleted & related interest reset successfully" });
 

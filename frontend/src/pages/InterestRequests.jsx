@@ -48,7 +48,7 @@ export default function InterestRequests() {
         <>
             <Sidebar />
 
-            <div className="ml-64 min-h-screen bg-gray-100">
+            <div className="ml-0 md:ml-64 min-h-screen bg-gray-100">
                 <AdminNavbar />
 
                 <div className="p-6">
@@ -67,9 +67,9 @@ export default function InterestRequests() {
                             {requests.map((r) => (
                                 <div
                                     key={r._id}
-                                    className="bg-white border rounded p-4 flex justify-between items-center"
+                                    className="bg-white border rounded p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3"
                                 >
-                                    <div>
+                                    <div className="flex-1">
                                         <p className="font-semibold">{r.name}</p>
                                         <p className="text-sm text-gray-600">{r.email}</p>
                                         <p className="text-sm mt-1">
@@ -77,17 +77,17 @@ export default function InterestRequests() {
                                         </p>
                                     </div>
 
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-2 mt-3 sm:mt-0">
                                         <button
                                             onClick={() => approveRequest(r._id)}
-                                            className="bg-green-600 text-white px-3 py-1 rounded"
+                                            className="bg-green-600 text-white px-3 py-2 sm:px-3 sm:py-1 rounded w-full sm:w-auto"
                                         >
                                             Approve
                                         </button>
 
                                         <button
                                             onClick={() => rejectRequest(r._id)}
-                                            className="bg-red-600 text-white px-3 py-1 rounded"
+                                            className="bg-red-600 text-white px-3 py-2 sm:px-3 sm:py-1 rounded w-full sm:w-auto"
                                         >
                                             Reject
                                         </button>

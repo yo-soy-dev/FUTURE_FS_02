@@ -36,7 +36,7 @@ interestRequestSchema.index(
   { email: 1, inventory: 1 },
   {
     unique: true,
-    partialFilterExpression: { status: "Pending" }
+    partialFilterExpression: { status: { $in: ["Pending", "Approved"] } }
   }
 );
 

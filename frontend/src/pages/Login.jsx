@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -18,6 +19,8 @@ export default function Login() {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
+      toast.success("Login successful!");
+
       if (res.data.user.role === "admin") {
         navigate("/admin/dashboard");
       } else {
@@ -25,14 +28,14 @@ export default function Login() {
       }
     } catch (err) {
       console.error(err);
-      alert(err.response?.data?.msg || "Login failed");
+      toast.error(err.response?.data?.msg || "Login failed");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow w-96">
-        <h2 className="text-2xl text-sky-500 font-bold mb-4 text-center">Welcome Back</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="bg-white p-6 md:p-8 rounded-lg shadow w-full max-w-md">
+        <h2 className="text-2xl  md:text-3xl text-sky-500 font-bold mb-6 text-center">Welcome Back</h2>
 
         <input
           placeholder="Email"
@@ -49,7 +52,7 @@ export default function Login() {
 
         <button
           onClick={submit}
-          className="w-full bg-sky-500 text-white py-2 rounded mt-3"
+          className="w-full bg-sky-500 text-white py-2 md:py-3 rounded mt-3 hover:bg-sky-600 transition"
         >
           Login
         </button>

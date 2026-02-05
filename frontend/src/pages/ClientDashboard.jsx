@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import ClientNavbar from "../components/ClientNavbar";
+import toast from "react-hot-toast";
 
 export default function ClientDashboard() {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -26,13 +27,23 @@ export default function ClientDashboard() {
     return new Date(ticket.updatedAt) > new Date(ticket.createdAt);
   };
 
-    const isInterested = (planId) => {
-    return leads.some(
-      l =>
-        l.source?.toString() === planId?.toString() &&
-        l.userId?.toString() === user?._id?.toString()
-    );
-  }
+  //   const isInterested = (planId) => {
+  //   return leads.some(
+  //     l =>
+  //       l.source?.toString() === planId?.toString() &&
+  //       l.email === user?.email
+  //   );
+  // }
+
+  const isInterested = (planId) => {
+  return leads.some(
+    l =>
+      l.source?.toString() === planId?.toString() &&
+      ["New", "Pending", "Approved"].includes(l.status) &&
+      l.email === user?.email
+  );
+};
+
 
 
 
@@ -43,13 +54,13 @@ export default function ClientDashboard() {
     try {
       setLoading(true);
       await api.post("/support", { subject, message, reference });
-      alert("Support request sent successfully");
+      toast.success("Support request sent successfully");
       setMessage("");
       setReference("");
       setOpenSupport(false);
       fetchMyTickets();
     } catch {
-      alert("Failed to send request");
+      toast.error("Failed to send request");
     } finally {
       setLoading(false);
     }
@@ -79,6 +90,7 @@ export default function ClientDashboard() {
       setTickets(data);
     } catch (err) {
       console.error(err);
+      toast.error("Failed to load tickets");
       setTickets([]);
     } finally {
       setLoadingTickets(false);
@@ -93,6 +105,7 @@ export default function ClientDashboard() {
       setPlans(data);
     } catch (err) {
       console.error(err);
+      toast.error("Failed to load plans");
       setPlans([]);
     }
   };
@@ -119,25 +132,43 @@ export default function ClientDashboard() {
   //   }
   // };
 
-  const sendInterestRequest = async (plan) => {
-    if (!plan?._id) return;
+  // const sendInterestRequest = async (plan) => {
+  //   if (!plan?._id) return;
 
-    if (!isInterested) {
-      return alert("You already sent interest or request is processed.");
-    }
+  //    if (isInterested(plan._id)) {
+  //   return toast.error("You already sent interest for a plan.");
+  // }
 
-    try {
-      await api.post("/interest/request", {
-        inventoryId: plan._id,
-        message: `Interested in ${plan.name}`
-      });
+  //   try {
+  //     await api.post("/interest/request", {
+  //       inventoryId: plan._id,
+  //       message: `Interested in ${plan.name}`
+  //     });
 
-      alert("Interest request sent! 👍");
-      fetchMyLead(); // optional (status update ke liye)
-    } catch (err) {
-      alert(err.response?.data?.message || "Interest request failed");
-    }
-  };
+  //     toast.success("Interest request sent! 👍");
+  //     fetchMyLead(); // optional (status update ke liye)
+  //   } catch (err) {
+  //     toast.error(err.response?.data?.message || "Interest already sent!");
+  //   }
+  // };
+
+  const [sendingInterest, setSendingInterest] = useState(false);
+
+const sendInterestRequest = async (plan) => {
+  if (!plan?._id || sendingInterest || isInterested(plan._id)) return;
+
+  try {
+    setSendingInterest(true);
+    await api.post("/interest/request", { inventoryId: plan._id });
+    toast.success("Interest sent!");
+    fetchMyLead();
+  } catch (err) {
+    toast.error(err.response?.data?.msg || "Already sent!");
+  } finally {
+    setSendingInterest(false);
+  }
+};
+
 
 
   useEffect(() => {
@@ -163,26 +194,26 @@ export default function ClientDashboard() {
       <div className="min-h-screen bg-gray-100">
         <ClientNavbar />
 
-        <div className="p-6 max-w-5xl mx-auto space-y-6">
+        <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-6">
           {/* Welcome */}
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded shadow">
-            <h1 className="text-2xl font-bold">
+            <h1 className="text-2xl md:text-3xl font-bold">
               👋 Welcome, {user?.name || "Client"}
             </h1>
-            <p className="text-sm opacity-90 mt-1">
+            <p className="text-sm md:text-base opacity-90 mt-1">
               Track your requests and support tickets here.
             </p>
           </div>
 
           {/* Profile + Lead */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded shadow border-l-4 border-blue-500">
+            <div className="bg-white p-4 md:p-6 rounded shadow border-l-4 border-blue-500">
               <h2 className="font-semibold mb-2">👤 Your Profile</h2>
               <p><strong>Email:</strong> {user?.email}</p>
               <p><strong>Role:</strong> Client</p>
             </div>
 
-            <div className="bg-white p-6 rounded shadow border-l-4 border-green-500">
+            <div className="bg-white p-4 md:p-6 rounded shadow border-l-4 border-green-500">
               <h2 className="font-semibold mb-2">📌 Lead Status</h2>
               {primaryLead ? (
                 <span
@@ -197,7 +228,7 @@ export default function ClientDashboard() {
           </div>
 
           {/* Investment Plans */}
-          <div className="bg-white p-6 rounded shadow">
+          <div className="bg-white p-4 md:p-6 rounded shadow">
             <h2 className="font-semibold text-lg mb-4">🏢 Investment Plans</h2>
 
             {plans.length === 0 ? (
@@ -207,7 +238,7 @@ export default function ClientDashboard() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {plans.map((p) => (
-                  <div key={p._id} className="border p-4 rounded">
+                  <div key={p._id} className="border p-4 rounded shadow hover:shadow-md transition">
                     <h3 className="font-bold">{p.name}</h3>
                     <p className="text-sm">Price: ₹{p.price}</p>
                     <p className="text-sm">Status: {p.status}</p>
@@ -233,9 +264,9 @@ export default function ClientDashboard() {
           </div>
 
           {/* Tickets */}
-          <div className="bg-white p-6 rounded shadow">
+          <div className="bg-white p-4 md:p-6 rounded shadow">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="font-semibold text-lg">🎫 My Support Tickets</h2>
+              <h2 className="font-semibold text-lg md:text-xl">🎫 My Support Tickets</h2>
               <button
                 onClick={() => setOpenSupport(true)}
                 className="bg-blue-600 text-white px-4 py-2 rounded-full"
@@ -287,9 +318,9 @@ export default function ClientDashboard() {
       {/* Support Drawer */}
       {openSupport && (
         <div className="fixed inset-0 bg-black/40 flex justify-end z-50">
-          <div className="w-full sm:w-[400px] bg-white h-full p-6 shadow-xl">
+          <div className="w-full sm:w-[400px] bg-white h-full p-4 md:p-6 shadow-xl">
             <div className="flex justify-between mb-4">
-              <h2 className="text-lg font-semibold">📩 Contact Support</h2>
+              <h2 className="text-lg md:text-xl font-semibold">📩 Contact Support</h2>
               <button onClick={() => setOpenSupport(false)}>✕</button>
             </div>
 
@@ -327,7 +358,7 @@ export default function ClientDashboard() {
             <button
               onClick={submitSupport}
               disabled={loading}
-              className="w-full py-2 rounded text-white bg-blue-600"
+              className="w-full md:w-auto py-2 rounded text-white bg-blue-600 hover:bg-blue-700 "
             >
               {loading ? "Sending..." : "Send Ticket"}
             </button>

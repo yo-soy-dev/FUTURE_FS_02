@@ -26,9 +26,13 @@ export default function Inventory() {
     status: "In Stock",
   });
 
-  const fetchItems = async () => {
-    const res = await api.get("/inventory");
-    setItems(res.data);
+   const fetchItems = async () => {
+    try {
+      const res = await api.get("/inventory");
+      setItems(res.data);
+    } catch (err) {
+      toast.error("Failed to fetch items!");
+    }
   };
 
   useEffect(() => {
@@ -39,7 +43,7 @@ export default function Inventory() {
 
   const validate = () => {
     if (!form.name || !form.sku || !form.price) {
-      alert("Name, SKU, Price required");
+      toast.error("Name, SKU, Price required");
       return false;
     }
     return true;
@@ -47,33 +51,54 @@ export default function Inventory() {
 
   const addItem = async () => {
     if (!validate()) return;
+    try {
     await api.post("/inventory", {
       ...form,
       quantity: Number(form.quantity),
       price: Number(form.price),
     });
     setForm({ name: "", sku: "", quantity: 1, price: "", status: "In Stock" });
+    toast.success("Item added successfully!");
     fetchItems();
+    } catch {
+      toast.error("Failed to add item!");
+    }
   };
 
   const updateItem = async () => {
     if (!validate()) return;
-    await api.put(`/inventory/${editId}`, form);
-    setEditId(null);
-    fetchItems();
+    try {
+      await api.put(`/inventory/${editId}`, form);
+      setEditId(null);
+      toast.success("Item updated successfully!");
+      fetchItems();
+    } catch {
+      toast.error("Failed to update item!");
+    }
   };
 
+
   const toggleStatus = async (item) => {
-    await api.put(`/inventory/${item._id}`, {
-      status: item.status === "In Stock" ? "Out of Stock" : "In Stock",
-    });
-    fetchItems();
+    try {
+      await api.put(`/inventory/${item._id}`, {
+        status: item.status === "In Stock" ? "Out of Stock" : "In Stock",
+      });
+      toast.success("Status updated!");
+      fetchItems();
+    } catch {
+      toast.error("Failed to update status!");
+    }
   };
 
   const deleteItem = async (id) => {
     if (!window.confirm("Delete this item?")) return;
-    await api.delete(`/inventory/${id}`);
-    fetchItems();
+    try {
+      await api.delete(`/inventory/${id}`);
+      toast.success("Item deleted!");
+      fetchItems();
+    } catch {
+      toast.error("Failed to delete item!");
+    }
   };
 
   const openInterested = async (item) => {
@@ -98,11 +123,11 @@ export default function Inventory() {
     <>
       <Sidebar />
 
-      <div className="ml-64 p-6">
-        <h2 className="text-2xl font-bold mb-4">Inventory Management</h2>
+      <div className="ml-0 md:ml-64 p-4 md:p-6">
+        <h2 className="text-xl md:text-2xl font-bold mb-4">Inventory Management</h2>
 
         {/* SEARCH + FILTER */}
-        <div className="flex gap-2 mb-4">
+        <div className="flex flex-col md:flex-row gap-2 mb-4">
           <input
             placeholder="Search name or SKU..."
             className="border p-2 rounded flex-1"
@@ -121,7 +146,7 @@ export default function Inventory() {
         </div>
 
         {/* FORM */}
-        <div className="bg-white border rounded p-4 mb-4">
+        <div className="bg-white border rounded p-4 mb-4 overflow-x-auto">
           <div className="grid grid-cols-5 gap-2">
             {["name", "sku", "quantity", "price"].map((f) => (
               <input
@@ -136,7 +161,7 @@ export default function Inventory() {
               />
             ))}
             <select
-              className="border p-2 rounded"
+              className="border p-2 rounded w-full"
               value={form.status}
               onChange={(e) =>
                 setForm({ ...form, status: e.target.value })
@@ -166,7 +191,7 @@ export default function Inventory() {
               <tr>
                 {["Name", "SKU", "Qty", "Price", "Status", "Interested", "Action"].map(
                   (h) => (
-                    <th key={h} className="border p-2 text-left">
+                    <th key={h} className="border p-2 text-left text-sm md:text-base">
                       {h}
                     </th>
                   )
@@ -177,15 +202,15 @@ export default function Inventory() {
             <tbody>
               {data.map((item) => (
                 <tr key={item._id} className="hover:bg-gray-50">
-                  <td className="border p-2">{item.name}</td>
-                  <td className="border p-2">{item.sku}</td>
-                  <td className="border p-2">{item.quantity}</td>
-                  <td className="border p-2">₹{item.price}</td>
+                  <td className="border p-2 text-sm md:text-base">{item.name}</td>
+                  <td className="border p-2 text-sm md:text-base">{item.sku}</td>
+                  <td className="border p-2 text-sm md:text-base">{item.quantity}</td>
+                  <td className="border p-2 text-sm md:text-base">₹{item.price}</td>
 
                   <td className="border p-2">
                     <button
                       onClick={() => toggleStatus(item)}
-                      className={`px-2 py-1 rounded text-xs font-semibold ${
+                      className={`px-2 py-1 rounded text-xs md:text-sm font-semibold ${
                         item.status === "In Stock"
                           ? "bg-green-100 text-green-700"
                           : "bg-red-100 text-red-700"
@@ -198,13 +223,13 @@ export default function Inventory() {
                   <td className="border p-2">
                     <button
                       onClick={() => openInterested(item)}
-                      className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-sm"
+                      className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs md:text-sm"
                     >
                       {item.interestedCount}
                     </button>
                   </td>
 
-                  <td className="border p-2 space-x-2">
+                  <td className="border p-2 space-x-2 text-sm md:text-base">
                     <button
                       onClick={() => {
                         setEditId(item._id);
@@ -228,11 +253,11 @@ export default function Inventory() {
         </div>
 
         {/* PAGINATION */}
-        <div className="flex justify-center gap-3 mt-4">
+        <div className="flex justify-center gap-3 mt-4 flex-wrap">
           <button
             disabled={page === 1}
             onClick={() => setPage(page - 1)}
-            className="border px-3 py-1 rounded"
+            className="border px-3 py-1 rounded disabled:opacity-50"
           >
             Prev
           </button>
@@ -242,7 +267,7 @@ export default function Inventory() {
           <button
             disabled={page === totalPages}
             onClick={() => setPage(page + 1)}
-            className="border px-3 py-1 rounded"
+            className="border px-3 py-1 rounded disabled:opacity-50"
           >
             Next
           </button>
@@ -256,7 +281,7 @@ export default function Inventory() {
             className="fixed inset-0 bg-black/40 z-40"
             onClick={() => setShowDrawer(false)}
           />
-          <div className="fixed right-0 top-0 w-96 h-full bg-white z-50 shadow-xl p-4">
+          <div className="fixed right-0 top-0 w-full sm:w-96 h-full bg-white z-50 shadow-xl p-4 overflow-y-auto">
             <h3 className="text-lg font-bold mb-2">
               Interested Users
             </h3>

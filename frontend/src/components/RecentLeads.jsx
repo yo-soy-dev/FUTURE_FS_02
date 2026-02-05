@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import toast from "react-hot-toast";
+
 
 export default function RecentLeads() {
   const [leads, setLeads] = useState([]);
@@ -9,6 +11,7 @@ export default function RecentLeads() {
       const res = await api.get("/leads");
       setLeads(res.data.slice(0, 5)); // latest 5 leads
     } catch (err) {
+      toast.error("Failed to fetch recent leads!");
       console.error(err);
     }
   };
@@ -18,15 +21,15 @@ export default function RecentLeads() {
   }, []);
 
   return (
-    <div className="bg-white rounded shadow">
+    <div className="bg-white rounded shadow overflow-x-auto">
       <div className="p-4 border-b flex justify-between items-center">
-        <h2 className="font-semibold">Recent Leads</h2>
-        <span className="text-sm text-blue-600 cursor-pointer">
+        <h2 className="font-semibold text-lg md:text-xl">Recent Leads</h2>
+        <span className="text-sm md:text-base text-blue-600 cursor-pointer">
           View all
         </span>
       </div>
 
-      <table className="w-full text-sm">
+      <table className="w-full text-sm md:text-base min-w-[600px]">
         <thead className="bg-gray-50">
           <tr>
             <th className="p-3 text-left">Name</th>
