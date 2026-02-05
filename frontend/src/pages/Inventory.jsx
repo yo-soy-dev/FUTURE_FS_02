@@ -1,0 +1,287 @@
+import { useEffect, useState } from "react";
+import api from "../services/api";
+import Sidebar from "../components/Sidebar";
+
+export default function Inventory() {
+  const [items, setItems] = useState([]);
+  const [editId, setEditId] = useState(null);
+
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("All");
+
+  // Drawer
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [interestedLeads, setInterestedLeads] = useState([]);
+
+  // Pagination
+  const [page, setPage] = useState(1);
+  const perPage = 10;
+
+  const [form, setForm] = useState({
+    name: "",
+    sku: "",
+    quantity: 1,
+    price: "",
+    status: "In Stock",
+  });
+
+  const fetchItems = async () => {
+    const res = await api.get("/inventory");
+    setItems(res.data);
+  };
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+  useEffect(() => setPage(1), [search, filter]);
+
+  const validate = () => {
+    if (!form.name || !form.sku || !form.price) {
+      alert("Name, SKU, Price required");
+      return false;
+    }
+    return true;
+  };
+
+  const addItem = async () => {
+    if (!validate()) return;
+    await api.post("/inventory", {
+      ...form,
+      quantity: Number(form.quantity),
+      price: Number(form.price),
+    });
+    setForm({ name: "", sku: "", quantity: 1, price: "", status: "In Stock" });
+    fetchItems();
+  };
+
+  const updateItem = async () => {
+    if (!validate()) return;
+    await api.put(`/inventory/${editId}`, form);
+    setEditId(null);
+    fetchItems();
+  };
+
+  const toggleStatus = async (item) => {
+    await api.put(`/inventory/${item._id}`, {
+      status: item.status === "In Stock" ? "Out of Stock" : "In Stock",
+    });
+    fetchItems();
+  };
+
+  const deleteItem = async (id) => {
+    if (!window.confirm("Delete this item?")) return;
+    await api.delete(`/inventory/${id}`);
+    fetchItems();
+  };
+
+  const openInterested = async (item) => {
+    setSelectedItem(item);
+    setShowDrawer(true);
+    const res = await api.get(`/leads/inventory/${item._id}`);
+    setInterestedLeads(res.data);
+  };
+
+  const filtered = items.filter((i) => {
+    const matchSearch =
+      i.name.toLowerCase().includes(search.toLowerCase()) ||
+      i.sku.toLowerCase().includes(search.toLowerCase());
+    const matchFilter = filter === "All" || i.status === filter;
+    return matchSearch && matchFilter;
+  });
+
+  const totalPages = Math.ceil(filtered.length / perPage);
+  const data = filtered.slice((page - 1) * perPage, page * perPage);
+
+  return (
+    <>
+      <Sidebar />
+
+      <div className="ml-64 p-6">
+        <h2 className="text-2xl font-bold mb-4">Inventory Management</h2>
+
+        {/* SEARCH + FILTER */}
+        <div className="flex gap-2 mb-4">
+          <input
+            placeholder="Search name or SKU..."
+            className="border p-2 rounded flex-1"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <select
+            className="border p-2 rounded"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+          >
+            <option>All</option>
+            <option>In Stock</option>
+            <option>Out of Stock</option>
+          </select>
+        </div>
+
+        {/* FORM */}
+        <div className="bg-white border rounded p-4 mb-4">
+          <div className="grid grid-cols-5 gap-2">
+            {["name", "sku", "quantity", "price"].map((f) => (
+              <input
+                key={f}
+                type={f === "quantity" || f === "price" ? "number" : "text"}
+                className="border p-2 rounded"
+                placeholder={f.toUpperCase()}
+                value={form[f]}
+                onChange={(e) =>
+                  setForm({ ...form, [f]: e.target.value })
+                }
+              />
+            ))}
+            <select
+              className="border p-2 rounded"
+              value={form.status}
+              onChange={(e) =>
+                setForm({ ...form, status: e.target.value })
+              }
+            >
+              <option>In Stock</option>
+              <option>Out of Stock</option>
+            </select>
+          </div>
+
+          <div className="mt-3 text-right">
+            <button
+              onClick={editId ? updateItem : addItem}
+              className={`px-4 py-2 rounded text-white ${
+                editId ? "bg-green-600" : "bg-blue-600"
+              }`}
+            >
+              {editId ? "Update" : "Add"}
+            </button>
+          </div>
+        </div>
+
+        {/* TABLE */}
+        <div className="bg-white border rounded overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-gray-100">
+              <tr>
+                {["Name", "SKU", "Qty", "Price", "Status", "Interested", "Action"].map(
+                  (h) => (
+                    <th key={h} className="border p-2 text-left">
+                      {h}
+                    </th>
+                  )
+                )}
+              </tr>
+            </thead>
+
+            <tbody>
+              {data.map((item) => (
+                <tr key={item._id} className="hover:bg-gray-50">
+                  <td className="border p-2">{item.name}</td>
+                  <td className="border p-2">{item.sku}</td>
+                  <td className="border p-2">{item.quantity}</td>
+                  <td className="border p-2">₹{item.price}</td>
+
+                  <td className="border p-2">
+                    <button
+                      onClick={() => toggleStatus(item)}
+                      className={`px-2 py-1 rounded text-xs font-semibold ${
+                        item.status === "In Stock"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {item.status}
+                    </button>
+                  </td>
+
+                  <td className="border p-2">
+                    <button
+                      onClick={() => openInterested(item)}
+                      className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-sm"
+                    >
+                      {item.interestedCount}
+                    </button>
+                  </td>
+
+                  <td className="border p-2 space-x-2">
+                    <button
+                      onClick={() => {
+                        setEditId(item._id);
+                        setForm(item);
+                      }}
+                      className="text-blue-600"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => deleteItem(item._id)}
+                      className="text-red-600"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* PAGINATION */}
+        <div className="flex justify-center gap-3 mt-4">
+          <button
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+            className="border px-3 py-1 rounded"
+          >
+            Prev
+          </button>
+          <span>
+            Page {page} / {totalPages || 1}
+          </span>
+          <button
+            disabled={page === totalPages}
+            onClick={() => setPage(page + 1)}
+            className="border px-3 py-1 rounded"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+
+      {/* DRAWER */}
+      {showDrawer && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/40 z-40"
+            onClick={() => setShowDrawer(false)}
+          />
+          <div className="fixed right-0 top-0 w-96 h-full bg-white z-50 shadow-xl p-4">
+            <h3 className="text-lg font-bold mb-2">
+              Interested Users
+            </h3>
+            <p className="text-sm mb-3 text-gray-500">
+              {selectedItem?.name}
+            </p>
+
+            {interestedLeads.length === 0 ? (
+              <p className="text-gray-500">No interested users</p>
+            ) : (
+              <div className="space-y-2">
+                {interestedLeads.map((l) => (
+                  <div key={l._id} className="border p-2 rounded">
+                    <p className="font-semibold">{l.name}</p>
+                    <p className="text-xs text-gray-500">{l.email}</p>
+                    <span className="text-xs mt-1 inline-block px-2 py-1 rounded bg-gray-100">
+                      {l.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      )}
+    </>
+  );
+}

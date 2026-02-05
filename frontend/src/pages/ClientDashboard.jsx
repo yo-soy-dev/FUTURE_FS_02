@@ -1,0 +1,340 @@
+
+import { useEffect, useState } from "react";
+import api from "../services/api";
+import ClientNavbar from "../components/ClientNavbar";
+
+export default function ClientDashboard() {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const [leads, setLeads] = useState([]);
+  const [tickets, setTickets] = useState([]);
+  const [loadingTickets, setLoadingTickets] = useState(true);
+
+  const [openSupport, setOpenSupport] = useState(false);
+  const [message, setMessage] = useState("");
+  const [subject, setSubject] = useState("General Query");
+  const [loading, setLoading] = useState(false);
+  const [plans, setPlans] = useState([]);
+  const [reference, setReference] = useState("");
+
+
+  const primaryLead = leads.length > 0 ? leads[0] : null;
+
+  /* ------------------ Helpers ------------------ */
+  const isNewReply = (ticket) => {
+    if (!ticket || ticket.status !== "Resolved") return false;
+    return new Date(ticket.updatedAt) > new Date(ticket.createdAt);
+  };
+
+    const isInterested = (planId) => {
+    return leads.some(
+      l =>
+        l.source?.toString() === planId?.toString() &&
+        l.userId?.toString() === user?._id?.toString()
+    );
+  }
+
+
+
+  /* ------------------ Submit Ticket ------------------ */
+  const submitSupport = async () => {
+    if (!message.trim()) return alert("Message required");
+
+    try {
+      setLoading(true);
+      await api.post("/support", { subject, message, reference });
+      alert("Support request sent successfully");
+      setMessage("");
+      setReference("");
+      setOpenSupport(false);
+      fetchMyTickets();
+    } catch {
+      alert("Failed to send request");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ------------------ Fetch Lead ------------------ */
+  const fetchMyLead = async () => {
+    try {
+      const res = await api.get("/leads/my");
+      const data = Array.isArray(res.data) ? res.data.filter(Boolean) : [res.data].filter(Boolean);
+
+      // latest lead first
+      data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      setLeads(data);
+    } catch {
+      setLeads([]);
+    }
+  };
+
+  /* ------------------ Fetch Tickets ------------------ */
+  const fetchMyTickets = async () => {
+    try {
+      setLoadingTickets(true);
+      const res = await api.get("/support/my");
+      const data = Array.isArray(res.data) ? res.data.filter(Boolean) : [];
+      setTickets(data);
+    } catch (err) {
+      console.error(err);
+      setTickets([]);
+    } finally {
+      setLoadingTickets(false);
+    }
+  };
+
+  /* ------------------ Fetch Plans ------------------ */
+  const fetchPlans = async () => {
+    try {
+      const res = await api.get("/inventory/public");
+      const data = Array.isArray(res.data) ? res.data.filter(Boolean) : [];
+      setPlans(data);
+    } catch (err) {
+      console.error(err);
+      setPlans([]);
+    }
+  };
+
+  /* ------------------ Interested ------------------ */
+  // const interested = async (plan) => {
+  //   if (!plan?._id) return;
+  //   if (isInterested(plan._id)) {
+  //     return alert("Aap is plan me already interest dikha chuke ho.");
+  //   }
+
+  //   try {
+  //     await api.post("/leads", {
+  //       name: user.name || "Unknown",
+  //       email: user.email || "Unknown",
+  //       source: plan._id,
+  //       notes: `Interested in ${plan.name || "Plan"}`,
+  //     });
+
+  //     alert("Interest send ho gaya!");
+  //     fetchMyLead();
+  //   } catch {
+  //     alert("Already lead exist ya error");
+  //   }
+  // };
+
+  const sendInterestRequest = async (plan) => {
+    if (!plan?._id) return;
+
+    if (!isInterested) {
+      return alert("You already sent interest or request is processed.");
+    }
+
+    try {
+      await api.post("/interest/request", {
+        inventoryId: plan._id,
+        message: `Interested in ${plan.name}`
+      });
+
+      alert("Interest request sent! 👍");
+      fetchMyLead(); // optional (status update ke liye)
+    } catch (err) {
+      alert(err.response?.data?.message || "Interest request failed");
+    }
+  };
+
+
+  useEffect(() => {
+    fetchMyLead();
+    fetchMyTickets();
+    fetchPlans();
+  }, []);
+
+  const statusStyle = {
+    Open: "bg-yellow-100 text-yellow-700",
+    Resolved: "bg-green-100 text-green-700",
+  };
+
+  const leadStyle = {
+    New: "bg-blue-100 text-blue-700",
+    Contacted: "bg-purple-100 text-purple-700",
+    Converted: "bg-green-100 text-green-700",
+    Rejected: "bg-red-100 text-red-700",
+  };
+
+  return (
+    <>
+      <div className="min-h-screen bg-gray-100">
+        <ClientNavbar />
+
+        <div className="p-6 max-w-5xl mx-auto space-y-6">
+          {/* Welcome */}
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded shadow">
+            <h1 className="text-2xl font-bold">
+              👋 Welcome, {user?.name || "Client"}
+            </h1>
+            <p className="text-sm opacity-90 mt-1">
+              Track your requests and support tickets here.
+            </p>
+          </div>
+
+          {/* Profile + Lead */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white p-6 rounded shadow border-l-4 border-blue-500">
+              <h2 className="font-semibold mb-2">👤 Your Profile</h2>
+              <p><strong>Email:</strong> {user?.email}</p>
+              <p><strong>Role:</strong> Client</p>
+            </div>
+
+            <div className="bg-white p-6 rounded shadow border-l-4 border-green-500">
+              <h2 className="font-semibold mb-2">📌 Lead Status</h2>
+              {primaryLead ? (
+                <span
+                  className={`px-4 py-1 rounded-full ${leadStyle[primaryLead.status]}`}
+                >
+                  {primaryLead.status}
+                </span>
+              ) : (
+                <span className="text-gray-400">No lead found</span>
+              )}
+            </div>
+          </div>
+
+          {/* Investment Plans */}
+          <div className="bg-white p-6 rounded shadow">
+            <h2 className="font-semibold text-lg mb-4">🏢 Investment Plans</h2>
+
+            {plans.length === 0 ? (
+              <p className="text-center text-gray-400 py-6">
+                Loading plans or no plans added by admin.
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {plans.map((p) => (
+                  <div key={p._id} className="border p-4 rounded">
+                    <h3 className="font-bold">{p.name}</h3>
+                    <p className="text-sm">Price: ₹{p.price}</p>
+                    <p className="text-sm">Status: {p.status}</p>
+
+                    <button
+                      onClick={() => sendInterestRequest(p)}
+                      disabled={isInterested(p._id)}
+                      className={`mt-2 px-3 py-1 rounded text-white ${isInterested(p._id)
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-blue-600"
+                        }`}
+                    >
+                      {isInterested(p._id)
+                        ? "Already Interested"
+                        : "Interested"}
+                    </button>
+
+
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Tickets */}
+          <div className="bg-white p-6 rounded shadow">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="font-semibold text-lg">🎫 My Support Tickets</h2>
+              <button
+                onClick={() => setOpenSupport(true)}
+                className="bg-blue-600 text-white px-4 py-2 rounded-full"
+              >
+                + New Ticket
+              </button>
+            </div>
+
+            {loadingTickets ? (
+              <p className="text-gray-500">Loading tickets...</p>
+            ) : tickets.length === 0 ? (
+              <p className="text-gray-400">No support tickets yet.</p>
+            ) : (
+              <div className="space-y-4">
+                {tickets.map((ticket) => (
+                  <div key={ticket._id} className="border rounded p-4">
+                    <div className="flex justify-between items-center">
+                      <h3 className="font-medium">{ticket.subject}</h3>
+                      <span
+                        className={`text-xs px-3 py-1 rounded-full ${statusStyle[ticket.status]}`}
+                      >
+                        {ticket.status}
+                      </span>
+                    </div>
+
+                    <p className="text-sm text-gray-600 mt-2">
+                      {ticket.message}
+                    </p>
+
+                    {ticket.adminReply && (
+                      <div
+                        className={`mt-3 p-3 text-sm border-l-4 rounded ${isNewReply(ticket)
+                          ? "bg-green-100 border-green-600 animate-pulse"
+                          : "bg-green-50 border-green-500"
+                          }`}
+                      >
+                        <strong>Admin Reply</strong>
+                        <p>{ticket.adminReply}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Support Drawer */}
+      {openSupport && (
+        <div className="fixed inset-0 bg-black/40 flex justify-end z-50">
+          <div className="w-full sm:w-[400px] bg-white h-full p-6 shadow-xl">
+            <div className="flex justify-between mb-4">
+              <h2 className="text-lg font-semibold">📩 Contact Support</h2>
+              <button onClick={() => setOpenSupport(false)}>✕</button>
+            </div>
+
+            <label className="block mb-2 font-medium">Subject</label>
+            <select
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              className="w-full p-2 border rounded mb-4"
+            >
+              <option value="General Query">General Query</option>
+              <option value="Complaint">Complaint</option>
+              <option value="Technical Issue">Technical Issue</option>
+            </select>
+
+            {/* Optional Reference / Title */}
+            <label className="block mb-2 font-medium">Reference (Optional)</label>
+            <input
+              type="text"
+              value={reference || ""}
+              onChange={(e) => setReference(e.target.value)}
+              placeholder="Enter reference or title"
+              className="w-full p-2 border rounded mb-4"
+            />
+
+            <label className="block mb-2 font-medium">Message</label>
+
+            <textarea
+              rows={4}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="w-full p-2 border rounded mb-4"
+              placeholder="Describe your issue..."
+            />
+
+            <button
+              onClick={submitSupport}
+              disabled={loading}
+              className="w-full py-2 rounded text-white bg-blue-600"
+            >
+              {loading ? "Sending..." : "Send Ticket"}
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
