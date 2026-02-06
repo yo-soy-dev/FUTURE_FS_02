@@ -111,7 +111,7 @@ The application features **dual dashboards** - one for administrators with full 
 
 ---
 
-## Tech Stack 🛠️
+## 🛠️ Tech Stack 
 
 ### **Frontend**
 
