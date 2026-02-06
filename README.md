@@ -11,7 +11,7 @@
 
 **A modern, production-ready full-stack application built with the MERN stack, featuring secure JWT authentication, clean architecture, and scalable design patterns.**
 
-[Features](#-features) • [Tech Stack](#tech-stack) • [Getting Started](#-getting-started) • [API Documentation](#-api-documentation) • [Roadmap](#-roadmap)
+[Features](#-features) • [Tech Stack](#-tech-stack) • [Getting Started](#-getting-started) • [API Documentation](#-api-documentation) • [Roadmap](#-roadmap)
 
 </div>
 
