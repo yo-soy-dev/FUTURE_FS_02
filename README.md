@@ -705,13 +705,13 @@ Distributed under the ISC License. See `LICENSE` file for more information.
 **Devansh Tiwari**  
 Full-Stack Developer & AI SaaS Builder
 
-- 💼 **Portfolio**: [[Coming Soon](https://future-fs-02-pe62.vercel.app/login)]
-- 🐙 **GitHub**: [@your-username](https://github.com/yo-soy-dev)
-- 💼 **LinkedIn**: [Your LinkedIn](https://www.linkedin.com/in/yo-soy-dev)
+- 💼 **Portfolio**: [My Portfolio](https://future-fs-02-pe62.vercel.app/login)
+- 🐙 **GitHub**: [My Github](https://github.com/yo-soy-dev)
+- 💼 **LinkedIn**: [My Linkedin](https://www.linkedin.com/in/yo-soy-dev)
 - 📧 **Email**: devanshtiwari817@gmail.com
-- 🐦 **Twitter**: [@yourhandle](https://x.com/soy_yo_dev40)
+- 🐦 **X**: [My X](https://x.com/soy_yo_dev40)
 
-**Project Link**: [https://github.com/your-username/FUTURE_FS_02](https://github.com/yo-soy-dev/FUTURE_FS_02)
+**Project Link**: [https://github.com/yo-soy-dev/FUTURE_FS_02](https://github.com/yo-soy-dev/FUTURE_FS_02)
 
 ---
 
@@ -746,7 +746,7 @@ If you found this project helpful or learned something from it:
 
 **Made with ❤️ using the MERN Stack**
 
-[![Star on GitHub](https://img.shields.io/github/stars/your-username/FUTURE_FS_02?style=social)](https://github.com/your-username/FUTURE_FS_02)
-[![Follow on GitHub](https://img.shields.io/github/followers/your-username?style=social)](https://github.com/your-username)
+[![Star on GitHub](https://img.shields.io/github/stars/yo-soy-dev/FUTURE_FS_02?style=social)](https://github.com/yo-soy-dev/FUTURE_FS_02)
+[![Follow on GitHub](https://img.shields.io/github/followers/yo-soy-dev?style=social)](https://github.com/yo-soy-dev)
 
 </div>
