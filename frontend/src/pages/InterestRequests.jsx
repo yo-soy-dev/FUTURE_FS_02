@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 export default function InterestRequests() {
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(true);
+     const [open, setOpen] = useState(false);
 
     const fetchRequests = async () => {
         try {
@@ -46,10 +47,10 @@ export default function InterestRequests() {
 
     return (
         <>
-            <Sidebar />
+            <Sidebar  open={open} setOpen={setOpen} />
 
             <div className="ml-0 md:ml-64 min-h-screen bg-gray-100">
-                <AdminNavbar />
+                <AdminNavbar  open={open} setOpen={setOpen} />
 
                 <div className="p-6">
                     <h1 className="text-xl font-bold mb-4">

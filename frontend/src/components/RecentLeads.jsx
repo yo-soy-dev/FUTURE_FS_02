@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+
 
 
 export default function RecentLeads() {
   const [leads, setLeads] = useState([]);
+  const navigate = useNavigate();
+
 
   const fetchRecentLeads = async () => {
     try {
@@ -24,7 +28,7 @@ export default function RecentLeads() {
     <div className="bg-white rounded shadow overflow-x-auto">
       <div className="p-4 border-b flex justify-between items-center">
         <h2 className="font-semibold text-lg md:text-xl">Recent Leads</h2>
-        <span className="text-sm md:text-base text-blue-600 cursor-pointer">
+        <span onClick={() => navigate("/leads")} className="text-sm md:text-base text-teal-600 cursor-pointer">
           View all
         </span>
       </div>
@@ -56,7 +60,7 @@ export default function RecentLeads() {
                     lead.status === "Converted"
                       ? "text-green-600"
                       : lead.status === "New"
-                      ? "text-blue-600"
+                      ? "text-teal-600"
                       : "text-yellow-600"
                   }
                 >

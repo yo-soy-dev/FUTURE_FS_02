@@ -8,7 +8,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { Toaster } from "react-hot-toast";
 import Inventory from "./pages/Inventory";
 import AdminSupport from "./pages/AdminSupport";
-import InvestorPlans from "./pages/InvestorPlans";
 import InterestRequests from "./pages/InterestRequests";
 
 
@@ -81,16 +80,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
-        <Route
-          path="/plans"
-          element={
-            <ProtectedRoute role="client">
-              <InvestorPlans />
-            </ProtectedRoute>
-          }
-        />
-
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/login" />} />

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import Sidebar from "../components/Sidebar";
+import AdminNavbar from "../components/AdminNavbar";
 
 export default function Inventory() {
   const [items, setItems] = useState([]);
@@ -16,6 +17,7 @@ export default function Inventory() {
 
   // Pagination
   const [page, setPage] = useState(1);
+  const [open, setOpen] = useState(false);
   const perPage = 10;
 
   const [form, setForm] = useState({
@@ -121,9 +123,11 @@ export default function Inventory() {
 
   return (
     <>
-      <Sidebar />
+      <Sidebar  open={open} setOpen={setOpen}  />
 
       <div className="ml-0 md:ml-64 p-4 md:p-6">
+        <AdminNavbar open={open} setOpen={setOpen} />
+
         <h2 className="text-xl md:text-2xl font-bold mb-4">Inventory Management</h2>
 
         {/* SEARCH + FILTER */}
@@ -176,7 +180,7 @@ export default function Inventory() {
             <button
               onClick={editId ? updateItem : addItem}
               className={`px-4 py-2 rounded text-white ${
-                editId ? "bg-green-600" : "bg-blue-600"
+                editId ? "bg-green-600" : "bg-teal-600"
               }`}
             >
               {editId ? "Update" : "Add"}
@@ -223,28 +227,33 @@ export default function Inventory() {
                   <td className="border p-2">
                     <button
                       onClick={() => openInterested(item)}
-                      className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs md:text-sm"
+                      className="bg-teal-50 text-teal-700 px-2 py-1 rounded text-xs md:text-sm"
                     >
                       {item.interestedCount}
                     </button>
                   </td>
 
-                  <td className="border p-2 space-x-2 text-sm md:text-base">
+                  <td className="border p-2 text-sm md:text-base">
+                     <div className="flex items-center justify-center gap-2 leading-none">
                     <button
                       onClick={() => {
                         setEditId(item._id);
                         setForm(item);
                       }}
-                      className="text-blue-600"
+                      className="text-teal-600"
                     >
                       Edit
                     </button>
+
+                    <span className="inline-block h-6 md:h-8 w-px bg-gray-400"></span>
+
                     <button
                       onClick={() => deleteItem(item._id)}
                       className="text-red-600"
                     >
                       Delete
                     </button>
+                    </div>
                   </td>
                 </tr>
               ))}

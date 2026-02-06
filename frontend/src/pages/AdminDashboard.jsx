@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
   const [stats, setStats] = useState({
     total: 0,
     newLeads: 0,
@@ -57,10 +58,10 @@ const fetchInterestStats = async () => {
 
   return (
     <>
-      <Sidebar />
+      <Sidebar open={open} setOpen={setOpen} />
 
-      <div className="ml-64 min-h-screen bg-gray-100">
-        <AdminNavbar />
+      <div className={`ml-0 md:ml-64 min-h-screen bg-gray-100 transition-all duration-300`}>
+        <AdminNavbar open={open} setOpen={setOpen} />
 
         <div className="p-6 space-y-6">
 
@@ -69,7 +70,7 @@ const fetchInterestStats = async () => {
           ) : (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                <StatCard title="Total Leads" value={stats.total} color="blue" />
+                <StatCard title="Total Leads" value={stats.total} color="teal" />
                 <StatCard title="New Leads" value={stats.newLeads} color="yellow" />
                 <StatCard title="Contacted" value={stats.contacted} color="purple" />
                 <StatCard title="Converted" value={stats.converted} color="green" />

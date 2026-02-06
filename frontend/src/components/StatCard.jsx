@@ -1,5 +1,5 @@
 const colorMap = {
-  blue: "border-blue-500",
+  teal: "border-teal-500",
   yellow: "border-yellow-500",
   purple: "border-purple-500",
   green: "border-green-500",

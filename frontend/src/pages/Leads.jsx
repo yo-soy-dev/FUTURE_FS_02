@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import Sidebar from "../components/Sidebar";
-import Navbar from "../components/AdminNavbar";
+import AdminNavbar from "../components/AdminNavbar";
 import LeadTable from "../components/LeadTable";
 import LeadForm from "../components/LeadForm";
 import toast from "react-hot-toast";
@@ -14,6 +14,7 @@ const Leads = () => {
 
   const [selectedLead, setSelectedLead] = useState(null);
   const [selectedInventoryId, setSelectedInventoryId] = useState("");
+  const [open, setOpen] = useState(false);
 
   // 🔹 Fetch leads
   const fetchLeads = async () => {
@@ -42,15 +43,15 @@ const Leads = () => {
 
   return (
     <>
-      <Sidebar />
+      <Sidebar open={open} setOpen={setOpen} />
 
       <div className="ml-0 md:ml-64">
-        <Navbar />
+        <AdminNavbar open={open} setOpen={setOpen} />
 
         <div className="p-4 md:p-6">
 
           {/* 🔥 INVENTORY SELECT */}
-          <div className="fflex flex-col md:flex-row gap-3 mb-4 items-start md:items-cente">
+          <div className="flex flex-col md:flex-row gap-3 mb-4 items-start md:items-center">
             <select
               value={selectedInventoryId}
               onChange={(e) => setSelectedInventoryId(e.target.value)}
@@ -74,7 +75,7 @@ const Leads = () => {
                 setSelectedLead(null);
                 setShowForm(true);
               }}
-              className="bg-blue-600 text-white px-4 py-2 rounded w-full md:w-auto mt-2 md:mt-0 hover:bg-blue-700 transition"
+              className="bg-teal-600 text-white px-4 py-2 rounded w-full md:w-auto mt-2 md:mt-0 hover:bg-teal-700 transition"
             >
               + Add Lead
             </button>

@@ -183,7 +183,7 @@ const sendInterestRequest = async (plan) => {
   };
 
   const leadStyle = {
-    New: "bg-blue-100 text-blue-700",
+    New: "bg-teal-100 text-teal-700",
     Contacted: "bg-purple-100 text-purple-700",
     Converted: "bg-green-100 text-green-700",
     Rejected: "bg-red-100 text-red-700",
@@ -196,7 +196,7 @@ const sendInterestRequest = async (plan) => {
 
         <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-6">
           {/* Welcome */}
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded shadow">
+          <div className="bg-gradient-to-r from-teal-600 to-indigo-600 text-white p-6 rounded shadow">
             <h1 className="text-2xl md:text-3xl font-bold">
               👋 Welcome, {user?.name || "Client"}
             </h1>
@@ -207,7 +207,7 @@ const sendInterestRequest = async (plan) => {
 
           {/* Profile + Lead */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-4 md:p-6 rounded shadow border-l-4 border-blue-500">
+            <div className="bg-white p-4 md:p-6 rounded shadow border-l-4 border-teal-500">
               <h2 className="font-semibold mb-2">👤 Your Profile</h2>
               <p><strong>Email:</strong> {user?.email}</p>
               <p><strong>Role:</strong> Client</p>
@@ -248,7 +248,7 @@ const sendInterestRequest = async (plan) => {
                       disabled={isInterested(p._id)}
                       className={`mt-2 px-3 py-1 rounded text-white ${isInterested(p._id)
                         ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-blue-600"
+                        : "bg-teal-600"
                         }`}
                     >
                       {isInterested(p._id)
@@ -269,7 +269,7 @@ const sendInterestRequest = async (plan) => {
               <h2 className="font-semibold text-lg md:text-xl">🎫 My Support Tickets</h2>
               <button
                 onClick={() => setOpenSupport(true)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-full"
+                className="bg-teal-600 text-white px-4 py-2 rounded-full"
               >
                 + New Ticket
               </button>
@@ -358,7 +358,7 @@ const sendInterestRequest = async (plan) => {
             <button
               onClick={submitSupport}
               disabled={loading}
-              className="w-full md:w-auto py-2 rounded text-white bg-blue-600 hover:bg-blue-700 "
+              className="w-full md:w-auto py-2 rounded text-white bg-teal-600 hover:bg-teal-700 "
             >
               {loading ? "Sending..." : "Send Ticket"}
             </button>

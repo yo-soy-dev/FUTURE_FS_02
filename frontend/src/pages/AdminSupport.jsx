@@ -8,6 +8,8 @@ export default function AdminSupport() {
   const [loading, setLoading] = useState(true);
 
   const [replies, setReplies] = useState({});
+  const [open, setOpen] = useState(false);
+
 
 
   const fetchTickets = async () => {
@@ -54,10 +56,11 @@ export default function AdminSupport() {
 
   return (
     <>
-      <Sidebar />
+      <Sidebar open={open} setOpen={setOpen} />
 
-      <div className="ml-64 min-h-screen bg-gray-100">
-        <AdminNavbar />
+      <div className={`min-h-screen bg-gray-100 transition-all duration-300
+    ${open ? "ml-64" : "ml-0"} md:ml-64`}>
+        <AdminNavbar open={open} setOpen={setOpen} />
 
         <div className="p-6">
           <h1 className="text-xl font-bold mb-4">

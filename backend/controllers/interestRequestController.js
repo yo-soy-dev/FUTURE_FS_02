@@ -157,10 +157,10 @@ export const approveRequestAndCreateLead = async (req, res) => {
   await request.save();
 
   // ❌ reject all other requests of same user
-  await InterestRequest.updateMany(
-    { email: request.email, _id: { $ne: request._id } },
-    { status: "Rejected" }
-  );
+  // await InterestRequest.updateMany(
+  //   { email: request.email, _id: { $ne: request._id } },
+  //   { status: "Rejected" }
+  // );
 
   res.json({
     msg: "Lead created & other interests closed",
