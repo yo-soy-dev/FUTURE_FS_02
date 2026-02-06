@@ -135,7 +135,7 @@ The application features **dual dashboards** - one for administrators with full 
 
 ---
 
-## 🏛️ Project Architecture
+## Project Architecture 🏛️
 
 ```mermaid
 graph TB
@@ -152,7 +152,7 @@ graph TB
 
 ---
 
-## 🚀 Getting Started
+## Getting Started 🚀
 
 ### Prerequisites
 
@@ -210,7 +210,7 @@ CLIENT_URL=http://localhost:5173
 
 ---
 
-## 💻 Usage
+## Usage 💻
 
 ### Running the Development Servers
 
@@ -245,7 +245,7 @@ Optimized production files will be in `frontend/dist/`
 
 ---
 
-## 📡 API Documentation
+## API Documentation 📡
 
 ### Base URL
 
@@ -253,7 +253,7 @@ Optimized production files will be in `frontend/dist/`
 http://localhost:5000/api
 ```
 
-### 🔐 Authentication Endpoints
+### Authentication Endpoints 🔐
 
 #### Register User
 
@@ -305,7 +305,7 @@ Authorization: Bearer <token>
 
 ---
 
-### 📋 Lead Management Endpoints
+### Lead Management Endpoints 📋
 
 #### Get All Leads
 
@@ -352,7 +352,7 @@ Authorization: Bearer <token>
 
 ---
 
-### 📦 Inventory Management Endpoints
+### Inventory Management Endpoints 📦
 
 #### Get All Inventory Items
 
@@ -399,7 +399,7 @@ Authorization: Bearer <token>
 
 ---
 
-### 🎫 Support Ticket Endpoints
+### Support Ticket Endpoints 🎫
 
 #### Get All Tickets
 
@@ -438,7 +438,7 @@ Content-Type: application/json
 
 ---
 
-### 💼 Interest Request Endpoints
+### Interest Request Endpoints 💼
 
 #### Get All Interest Requests
 
@@ -500,7 +500,7 @@ Content-Type: application/json
 
 ---
 
-## 🔐 Authentication Flow
+## Authentication Flow 🔐
 
 ```mermaid
 sequenceDiagram
@@ -532,7 +532,7 @@ sequenceDiagram
 
 ---
 
-## 📁 Project Structure
+## Project Structure 📁
 
 ```
 FUTURE_FS_02/
@@ -606,7 +606,7 @@ FUTURE_FS_02/
 └── 📄 LICENSE
 ```
 
-### 📋 Key Directories Explained
+### Key Directories Explained 📋
 
 #### **Backend**
 - **`config/`** - Database and app configuration
@@ -624,21 +624,21 @@ FUTURE_FS_02/
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap 🗺️
 
-### ✅ Completed
+### Completed ✅
 - [x] Basic MERN stack setup
 - [x] JWT authentication system
 - [x] Protected routes
 - [x] User registration and login
 - [x] Clean MVC architecture
 
-### 🚧 In Progress
+### In Progress 🚧
 - [ ] Role-Based Access Control (RBAC)
 - [ ] Refresh token implementation
 - [ ] Email verification system
 
-### 📋 Planned Features
+### Planned Features 📋
 
 #### **Phase 1: Enhanced Security**
 - [ ] Two-Factor Authentication (2FA)
@@ -673,7 +673,7 @@ FUTURE_FS_02/
 
 ---
 
-## 🤝 Contributing
+## Contributing 🤝
 
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
@@ -694,13 +694,13 @@ Contributions are what make the open-source community such an amazing place to l
 
 ---
 
-## 📜 License
+## License 📜
 
 Distributed under the ISC License. See `LICENSE` file for more information.
 
 ---
 
-## 👨‍💻 Contact
+## Contact 👨‍💻
 
 **Devansh Tiwari**  
 Full-Stack Developer & AI SaaS Builder
@@ -715,7 +715,7 @@ Full-Stack Developer & AI SaaS Builder
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments 🙏
 
 Special thanks to the following resources and communities:
 
@@ -728,7 +728,7 @@ Special thanks to the following resources and communities:
 
 ---
 
-## ⭐ Show Your Support
+## Show Your Support ⭐
 
 If you found this project helpful or learned something from it:
 
