@@ -1,8 +1,8 @@
 import SupportTicket from "../models/SupportTicket.js";
+import { logActivity } from "../utils/activityLogger.js";
 
-/* ===========================
-   CREATE SUPPORT TICKET
-=========================== */
+
+
 export const createSupportTicket = async (req, res) => {
   try {
     const { subject, message, reference } = req.body;
@@ -19,6 +19,15 @@ export const createSupportTicket = async (req, res) => {
       reference,
     });
 
+    await logActivity({
+      user: req.user || null,
+      action: "CREATE_TICKET",
+      module: "Support",
+      description: `Support ticket created by ${req.user.email}`,
+      meta: { ticketId: ticket._id },
+    });
+
+
     res.status(201).json({
       message: "Support ticket created successfully",
       ticket,
@@ -28,9 +37,7 @@ export const createSupportTicket = async (req, res) => {
   }
 };
 
-/* ===========================
-   GET ALL TICKETS (ADMIN)
-=========================== */
+
 export const getAllTickets = async (req, res) => {
   try {
     const tickets = await SupportTicket.find()
@@ -42,9 +49,6 @@ export const getAllTickets = async (req, res) => {
   }
 };
 
-/* ===========================
-   RESOLVE TICKET (ADMIN)
-=========================== */
 export const resolveTicket = async (req, res) => {
   try {
     const { id } = req.params;
@@ -60,6 +64,19 @@ export const resolveTicket = async (req, res) => {
     if (!ticket) {
       return res.status(404).json({ message: "Ticket not found" });
     }
+
+    await logActivity({
+      user: req.user || {
+        name: "Devansh Tiwari",
+        email: "admin@gmail.com",
+        role: "admin"
+      },
+      action: "RESOLVE_TICKET",
+      module: "Support",
+      description: `Ticket resolved for ${ticket.email}`,
+      meta: { ticketId: ticket._id },
+    });
+
 
     res.json({
       message: "Ticket resolved successfully",

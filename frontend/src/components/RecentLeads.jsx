@@ -13,7 +13,7 @@ export default function RecentLeads() {
   const fetchRecentLeads = async () => {
     try {
       const res = await api.get("/leads");
-      setLeads(res.data.slice(0, 5)); // latest 5 leads
+      setLeads(res.data.slice(0, 5)); 
     } catch (err) {
       toast.error("Failed to fetch recent leads!");
       console.error(err);

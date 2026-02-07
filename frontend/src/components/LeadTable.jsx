@@ -49,17 +49,14 @@ const LeadTable = ({ leads, onEdit, onDelete }) => {
               key={lead._id}
               className="border-t border-gray-300 hover:bg-gray-50 transition"
             >
-              {/* NAME */}
               <td className="p-3 font-medium max-w-[140px] md:max-w-none border-r border-gray-300">
                 {lead.name}
               </td>
 
-              {/* EMAIL */}
               <td className="p-3 text-sm text-gray-600 truncate border-r border-gray-300">
                 {lead.email}
               </td>
 
-              {/* STATUS */}
               <td className="p-3 border-r border-gray-300">
                 <span
                   className={`text-xs px-2 py-1 rounded font-semibold ${statusStyle[lead.status] || statusStyle.New
@@ -69,7 +66,6 @@ const LeadTable = ({ leads, onEdit, onDelete }) => {
                 </span>
               </td>
 
-              {/* ACTIONS */}
               <td className="p-3 text-center whitespace-nowrap">
                 <div className="flex items-center justify-center gap-2">
                   <button

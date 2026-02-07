@@ -13,7 +13,6 @@ const leadSchema = new mongoose.Schema(
       unique: true
     },
 
-    // 🔥 INVENTORY RELATION (VERY IMPORTANT)
     source: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Inventory",

@@ -35,7 +35,6 @@ export default function QuickActions() {
       </div>
 
       <div
-        // onClick={() => navigate("/inventory")}
         onClick={() => handleClick("/inventory", "Opening Inventory...")}
         className="cursor-pointer bg-white p-4 md:p-5 rounded shadow hover:shadow-lg transition"
       >

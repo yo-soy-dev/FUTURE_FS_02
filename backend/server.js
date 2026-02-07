@@ -8,6 +8,8 @@ import { createAdmin } from "./utils/createAdmin.js";
 import inventoryRoutes from "./routes/inventoryRoutes.js";
 import supportRoutes from "./routes/supportRoutes.js";
 import interestRequestRoutes from "./routes/interestRequestRoutes.js";
+import activityRoutes from "./routes/activityRoutes.js";
+
 
 
 dotenv.config();
@@ -29,6 +31,7 @@ app.use("/api/leads", leadRoutes);
 app.use("/api/inventory", inventoryRoutes);
 app.use("/api/support", supportRoutes);
 app.use("/api/interest", interestRequestRoutes);
+app.use("/api/activity", activityRoutes);
 
 
 

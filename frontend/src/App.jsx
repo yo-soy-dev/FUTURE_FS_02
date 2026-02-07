@@ -9,7 +9,12 @@ import { Toaster } from "react-hot-toast";
 import Inventory from "./pages/Inventory";
 import AdminSupport from "./pages/AdminSupport";
 import InterestRequests from "./pages/InterestRequests";
-
+import ClientLayout from "./components/ClientLayout";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+import Activity from "./pages/Activity";
+import Help from "./pages/Help";
+import AdminActivity from "./pages/AdminActivity";
 
 
 export default function App() {
@@ -69,19 +74,32 @@ export default function App() {
           }
         />
 
-
-
-        {/* CLIENT ROUTES */}
         <Route
-          path="/client/dashboard"
+          path="/admin/activity"
           element={
-            <ProtectedRoute role="client">
-              <ClientDashboard />
+            <ProtectedRoute role="admin">
+              <AdminActivity />
             </ProtectedRoute>
           }
         />
 
-        {/* Fallback */}
+       
+        <Route
+          path="/client"
+          element={
+            <ProtectedRoute role="client">
+              <ClientLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="dashboard" element={<ClientDashboard />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="activity" element={<Activity />} />
+          <Route path="help" element={<Help />} />
+        </Route>
+
+
         <Route path="*" element={<Navigate to="/login" />} />
         <Route
           path="/admin"

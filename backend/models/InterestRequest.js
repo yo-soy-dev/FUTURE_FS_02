@@ -28,10 +28,6 @@ const interestRequestSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-/**
- * 🔥 ONE PENDING request per email
- * Approved/Rejected multiple allowed
- */
 interestRequestSchema.index(
   { email: 1, inventory: 1 },
   {

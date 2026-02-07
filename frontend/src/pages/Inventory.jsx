@@ -10,12 +10,10 @@ export default function Inventory() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
 
-  // Drawer
   const [showDrawer, setShowDrawer] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [interestedLeads, setInterestedLeads] = useState([]);
 
-  // Pagination
   const [page, setPage] = useState(1);
   const [open, setOpen] = useState(false);
   const perPage = 10;
@@ -130,7 +128,6 @@ export default function Inventory() {
 
         <h2 className="text-xl md:text-2xl font-bold mb-4">Inventory Management</h2>
 
-        {/* SEARCH + FILTER */}
         <div className="flex flex-col md:flex-row gap-2 mb-4">
           <input
             placeholder="Search name or SKU..."
@@ -149,7 +146,6 @@ export default function Inventory() {
           </select>
         </div>
 
-        {/* FORM */}
         <div className="bg-white border rounded p-4 mb-4 overflow-x-auto">
           <div className="grid grid-cols-5 gap-2">
             {["name", "sku", "quantity", "price"].map((f) => (
@@ -188,7 +184,6 @@ export default function Inventory() {
           </div>
         </div>
 
-        {/* TABLE */}
         <div className="bg-white border rounded overflow-hidden">
           <table className="w-full">
             <thead className="bg-gray-100">
@@ -261,7 +256,6 @@ export default function Inventory() {
           </table>
         </div>
 
-        {/* PAGINATION */}
         <div className="flex justify-center gap-3 mt-4 flex-wrap">
           <button
             disabled={page === 1}

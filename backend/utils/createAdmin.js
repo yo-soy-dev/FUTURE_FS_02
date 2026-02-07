@@ -6,10 +6,8 @@ export const createAdmin = async () => {
     const adminEmail = "admin@gmail.com";
     const adminPassword = "12345678";
 
-    // Hash password first
     const hashedPassword = await bcrypt.hash(adminPassword, 10);
 
-    // Create or update admin
     const admin = await User.findOneAndUpdate(
       { email: adminEmail },
       {
@@ -18,7 +16,7 @@ export const createAdmin = async () => {
         password: hashedPassword,
         role: "admin",
       },
-      { upsert: true, new: true } // create if doesn't exist
+      { upsert: true, new: true } 
     );
 
     console.log(`Admin ready: ${adminEmail} / ${adminPassword}`);

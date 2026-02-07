@@ -1,7 +1,6 @@
 
 import { useEffect, useState } from "react";
 import api from "../services/api";
-import ClientNavbar from "../components/ClientNavbar";
 import toast from "react-hot-toast";
 
 export default function ClientDashboard() {
@@ -21,33 +20,25 @@ export default function ClientDashboard() {
 
   const primaryLead = leads.length > 0 ? leads[0] : null;
 
-  /* ------------------ Helpers ------------------ */
   const isNewReply = (ticket) => {
     if (!ticket || ticket.status !== "Resolved") return false;
     return new Date(ticket.updatedAt) > new Date(ticket.createdAt);
   };
 
-  //   const isInterested = (planId) => {
-  //   return leads.some(
-  //     l =>
-  //       l.source?.toString() === planId?.toString() &&
-  //       l.email === user?.email
-  //   );
-  // }
+  
 
   const isInterested = (planId) => {
-  return leads.some(
-    l =>
-      l.source?.toString() === planId?.toString() &&
-      ["New", "Pending", "Approved"].includes(l.status) &&
-      l.email === user?.email
-  );
-};
+    return leads.some(
+      l =>
+        l.source?.toString() === planId?.toString() &&
+        ["New", "Pending", "Approved"].includes(l.status) &&
+        l.email === user?.email
+    );
+  };
 
 
 
 
-  /* ------------------ Submit Ticket ------------------ */
   const submitSupport = async () => {
     if (!message.trim()) return alert("Message required");
 
@@ -66,13 +57,11 @@ export default function ClientDashboard() {
     }
   };
 
-  /* ------------------ Fetch Lead ------------------ */
   const fetchMyLead = async () => {
     try {
       const res = await api.get("/leads/my");
       const data = Array.isArray(res.data) ? res.data.filter(Boolean) : [res.data].filter(Boolean);
 
-      // latest lead first
       data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
       setLeads(data);
@@ -81,7 +70,6 @@ export default function ClientDashboard() {
     }
   };
 
-  /* ------------------ Fetch Tickets ------------------ */
   const fetchMyTickets = async () => {
     try {
       setLoadingTickets(true);
@@ -97,7 +85,6 @@ export default function ClientDashboard() {
     }
   };
 
-  /* ------------------ Fetch Plans ------------------ */
   const fetchPlans = async () => {
     try {
       const res = await api.get("/inventory/public");
@@ -110,64 +97,22 @@ export default function ClientDashboard() {
     }
   };
 
-  /* ------------------ Interested ------------------ */
-  // const interested = async (plan) => {
-  //   if (!plan?._id) return;
-  //   if (isInterested(plan._id)) {
-  //     return alert("Aap is plan me already interest dikha chuke ho.");
-  //   }
-
-  //   try {
-  //     await api.post("/leads", {
-  //       name: user.name || "Unknown",
-  //       email: user.email || "Unknown",
-  //       source: plan._id,
-  //       notes: `Interested in ${plan.name || "Plan"}`,
-  //     });
-
-  //     alert("Interest send ho gaya!");
-  //     fetchMyLead();
-  //   } catch {
-  //     alert("Already lead exist ya error");
-  //   }
-  // };
-
-  // const sendInterestRequest = async (plan) => {
-  //   if (!plan?._id) return;
-
-  //    if (isInterested(plan._id)) {
-  //   return toast.error("You already sent interest for a plan.");
-  // }
-
-  //   try {
-  //     await api.post("/interest/request", {
-  //       inventoryId: plan._id,
-  //       message: `Interested in ${plan.name}`
-  //     });
-
-  //     toast.success("Interest request sent! 👍");
-  //     fetchMyLead(); // optional (status update ke liye)
-  //   } catch (err) {
-  //     toast.error(err.response?.data?.message || "Interest already sent!");
-  //   }
-  // };
-
   const [sendingInterest, setSendingInterest] = useState(false);
 
-const sendInterestRequest = async (plan) => {
-  if (!plan?._id || sendingInterest || isInterested(plan._id)) return;
+  const sendInterestRequest = async (plan) => {
+    if (!plan?._id || sendingInterest || isInterested(plan._id)) return;
 
-  try {
-    setSendingInterest(true);
-    await api.post("/interest/request", { inventoryId: plan._id });
-    toast.success("Interest sent!");
-    fetchMyLead();
-  } catch (err) {
-    toast.error(err.response?.data?.msg || "Already sent!");
-  } finally {
-    setSendingInterest(false);
-  }
-};
+    try {
+      setSendingInterest(true);
+      await api.post("/interest/request", { inventoryId: plan._id });
+      toast.success("Interest sent!");
+      fetchMyLead();
+    } catch (err) {
+      toast.error(err.response?.data?.msg || "Already sent!");
+    } finally {
+      setSendingInterest(false);
+    }
+  };
 
 
 
@@ -192,180 +137,175 @@ const sendInterestRequest = async (plan) => {
   return (
     <>
       <div className="min-h-screen bg-gray-100">
-        <ClientNavbar />
 
-        <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-6">
-          {/* Welcome */}
-          <div className="bg-gradient-to-r from-teal-600 to-indigo-600 text-white p-6 rounded shadow">
-            <h1 className="text-2xl md:text-3xl font-bold">
-              👋 Welcome, {user?.name || "Client"}
-            </h1>
-            <p className="text-sm md:text-base opacity-90 mt-1">
-              Track your requests and support tickets here.
-            </p>
-          </div>
 
-          {/* Profile + Lead */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-4 md:p-6 rounded shadow border-l-4 border-teal-500">
-              <h2 className="font-semibold mb-2">👤 Your Profile</h2>
-              <p><strong>Email:</strong> {user?.email}</p>
-              <p><strong>Role:</strong> Client</p>
+          <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-6">
+            {/* Welcome */}
+            <div className="bg-gradient-to-r from-teal-600 to-indigo-600 text-white p-6 rounded shadow">
+              <h1 className="text-2xl md:text-3xl font-bold">
+                👋 Welcome, {user?.name || "Client"}
+              </h1>
+              <p className="text-sm md:text-base opacity-90 mt-1">
+                Track your requests and support tickets here.
+              </p>
             </div>
 
-            <div className="bg-white p-4 md:p-6 rounded shadow border-l-4 border-green-500">
-              <h2 className="font-semibold mb-2">📌 Lead Status</h2>
-              {primaryLead ? (
-                <span
-                  className={`px-4 py-1 rounded-full ${leadStyle[primaryLead.status]}`}
-                >
-                  {primaryLead.status}
-                </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white p-4 md:p-6 rounded shadow border-l-4 border-teal-500">
+                <h2 className="font-semibold mb-2">👤 Your Profile</h2>
+                <p><strong>Email:</strong> {user?.email}</p>
+                <p><strong>Role:</strong> Client</p>
+              </div>
+
+              <div className="bg-white p-4 md:p-6 rounded shadow border-l-4 border-green-500">
+                <h2 className="font-semibold mb-2">📌 Lead Status</h2>
+                {primaryLead ? (
+                  <span
+                    className={`px-4 py-1 rounded-full ${leadStyle[primaryLead.status]}`}
+                  >
+                    {primaryLead.status}
+                  </span>
+                ) : (
+                  <span className="text-gray-400">No lead found</span>
+                )}
+              </div>
+            </div>
+
+            <div className="bg-white p-4 md:p-6 rounded shadow">
+              <h2 className="font-semibold text-lg mb-4">🏢 Investment Plans</h2>
+
+              {plans.length === 0 ? (
+                <p className="text-center text-gray-400 py-6">
+                  Loading plans or no plans added by admin.
+                </p>
               ) : (
-                <span className="text-gray-400">No lead found</span>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {plans.map((p) => (
+                    <div key={p._id} className="border p-4 rounded shadow hover:shadow-md transition">
+                      <h3 className="font-bold">{p.name}</h3>
+                      <p className="text-sm">Price: ₹{p.price}</p>
+                      <p className="text-sm">Status: {p.status}</p>
+
+                      <button
+                        onClick={() => sendInterestRequest(p)}
+                        disabled={isInterested(p._id)}
+                        className={`mt-2 px-3 py-1 rounded text-white ${isInterested(p._id)
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-teal-600"
+                          }`}
+                      >
+                        {isInterested(p._id)
+                          ? "Already Interested"
+                          : "Interested"}
+                      </button>
+
+
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="bg-white p-4 md:p-6 rounded shadow">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="font-semibold text-lg md:text-xl">🎫 My Support Tickets</h2>
+                <button
+                  onClick={() => setOpenSupport(true)}
+                  className="bg-teal-600 text-white px-4 py-2 rounded-full"
+                >
+                  + New Ticket
+                </button>
+              </div>
+
+              {loadingTickets ? (
+                <p className="text-gray-500">Loading tickets...</p>
+              ) : tickets.length === 0 ? (
+                <p className="text-gray-400">No support tickets yet.</p>
+              ) : (
+                <div className="space-y-4">
+                  {tickets.map((ticket) => (
+                    <div key={ticket._id} className="border rounded p-4">
+                      <div className="flex justify-between items-center">
+                        <h3 className="font-medium">{ticket.subject}</h3>
+                        <span
+                          className={`text-xs px-3 py-1 rounded-full ${statusStyle[ticket.status]}`}
+                        >
+                          {ticket.status}
+                        </span>
+                      </div>
+
+                      <p className="text-sm text-gray-600 mt-2">
+                        {ticket.message}
+                      </p>
+
+                      {ticket.adminReply && (
+                        <div
+                          className={`mt-3 p-3 text-sm border-l-4 rounded ${isNewReply(ticket)
+                            ? "bg-green-100 border-green-600 animate-pulse"
+                            : "bg-green-50 border-green-500"
+                            }`}
+                        >
+                          <strong>Admin Reply</strong>
+                          <p>{ticket.adminReply}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           </div>
+        </div>
 
-          {/* Investment Plans */}
-          <div className="bg-white p-4 md:p-6 rounded shadow">
-            <h2 className="font-semibold text-lg mb-4">🏢 Investment Plans</h2>
-
-            {plans.length === 0 ? (
-              <p className="text-center text-gray-400 py-6">
-                Loading plans or no plans added by admin.
-              </p>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {plans.map((p) => (
-                  <div key={p._id} className="border p-4 rounded shadow hover:shadow-md transition">
-                    <h3 className="font-bold">{p.name}</h3>
-                    <p className="text-sm">Price: ₹{p.price}</p>
-                    <p className="text-sm">Status: {p.status}</p>
-
-                    <button
-                      onClick={() => sendInterestRequest(p)}
-                      disabled={isInterested(p._id)}
-                      className={`mt-2 px-3 py-1 rounded text-white ${isInterested(p._id)
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-teal-600"
-                        }`}
-                    >
-                      {isInterested(p._id)
-                        ? "Already Interested"
-                        : "Interested"}
-                    </button>
-
-
-                  </div>
-                ))}
+        {openSupport && (
+          <div className="fixed inset-0 bg-black/40 flex justify-end z-50">
+            <div className="w-full sm:w-[400px] bg-white h-full p-4 md:p-6 shadow-xl">
+              <div className="flex justify-between mb-4">
+                <h2 className="text-lg md:text-xl font-semibold">📩 Contact Support</h2>
+                <button onClick={() => setOpenSupport(false)}>✕</button>
               </div>
-            )}
-          </div>
 
-          {/* Tickets */}
-          <div className="bg-white p-4 md:p-6 rounded shadow">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="font-semibold text-lg md:text-xl">🎫 My Support Tickets</h2>
-              <button
-                onClick={() => setOpenSupport(true)}
-                className="bg-teal-600 text-white px-4 py-2 rounded-full"
+              <label className="block mb-2 font-medium">Subject</label>
+              <select
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                className="w-full p-2 border rounded mb-4"
               >
-                + New Ticket
+                <option value="General Query">General Query</option>
+                <option value="Complaint">Complaint</option>
+                <option value="Technical Issue">Technical Issue</option>
+              </select>
+
+              <label className="block mb-2 font-medium">Reference (Optional)</label>
+              <input
+                type="text"
+                value={reference || ""}
+                onChange={(e) => setReference(e.target.value)}
+                placeholder="Enter reference or title"
+                className="w-full p-2 border rounded mb-4"
+              />
+
+              <label className="block mb-2 font-medium">Message</label>
+
+              <textarea
+                rows={4}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                className="w-full p-2 border rounded mb-4"
+                placeholder="Describe your issue..."
+              />
+
+              <button
+                onClick={submitSupport}
+                disabled={loading}
+                className="w-full md:w-auto py-2 rounded text-white bg-teal-600 hover:bg-teal-700 "
+              >
+                {loading ? "Sending..." : "Send Ticket"}
               </button>
             </div>
-
-            {loadingTickets ? (
-              <p className="text-gray-500">Loading tickets...</p>
-            ) : tickets.length === 0 ? (
-              <p className="text-gray-400">No support tickets yet.</p>
-            ) : (
-              <div className="space-y-4">
-                {tickets.map((ticket) => (
-                  <div key={ticket._id} className="border rounded p-4">
-                    <div className="flex justify-between items-center">
-                      <h3 className="font-medium">{ticket.subject}</h3>
-                      <span
-                        className={`text-xs px-3 py-1 rounded-full ${statusStyle[ticket.status]}`}
-                      >
-                        {ticket.status}
-                      </span>
-                    </div>
-
-                    <p className="text-sm text-gray-600 mt-2">
-                      {ticket.message}
-                    </p>
-
-                    {ticket.adminReply && (
-                      <div
-                        className={`mt-3 p-3 text-sm border-l-4 rounded ${isNewReply(ticket)
-                          ? "bg-green-100 border-green-600 animate-pulse"
-                          : "bg-green-50 border-green-500"
-                          }`}
-                      >
-                        <strong>Admin Reply</strong>
-                        <p>{ticket.adminReply}</p>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
-        </div>
-      </div>
-
-      {/* Support Drawer */}
-      {openSupport && (
-        <div className="fixed inset-0 bg-black/40 flex justify-end z-50">
-          <div className="w-full sm:w-[400px] bg-white h-full p-4 md:p-6 shadow-xl">
-            <div className="flex justify-between mb-4">
-              <h2 className="text-lg md:text-xl font-semibold">📩 Contact Support</h2>
-              <button onClick={() => setOpenSupport(false)}>✕</button>
-            </div>
-
-            <label className="block mb-2 font-medium">Subject</label>
-            <select
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              className="w-full p-2 border rounded mb-4"
-            >
-              <option value="General Query">General Query</option>
-              <option value="Complaint">Complaint</option>
-              <option value="Technical Issue">Technical Issue</option>
-            </select>
-
-            {/* Optional Reference / Title */}
-            <label className="block mb-2 font-medium">Reference (Optional)</label>
-            <input
-              type="text"
-              value={reference || ""}
-              onChange={(e) => setReference(e.target.value)}
-              placeholder="Enter reference or title"
-              className="w-full p-2 border rounded mb-4"
-            />
-
-            <label className="block mb-2 font-medium">Message</label>
-
-            <textarea
-              rows={4}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              className="w-full p-2 border rounded mb-4"
-              placeholder="Describe your issue..."
-            />
-
-            <button
-              onClick={submitSupport}
-              disabled={loading}
-              className="w-full md:w-auto py-2 rounded text-white bg-teal-600 hover:bg-teal-700 "
-            >
-              {loading ? "Sending..." : "Send Ticket"}
-            </button>
-          </div>
-        </div>
-      )}
-    </>
-  );
+        )}
+      </>
+      );
 }
 

@@ -1,7 +1,8 @@
 import Inventory from "../models/Inventory.js";
 import Lead from "../models/Lead.js";
+import { logActivity } from "../utils/activityLogger.js";
 
-// CREATE
+
 export const createItem = async (req, res) => {
   try {
     const { name, sku, price, quantity, status } = req.body;
@@ -20,6 +21,15 @@ export const createItem = async (req, res) => {
       quantity: quantity || 1,
       status: status || "In Stock"
     });
+
+    await logActivity({
+      user: req.user,
+      action: "CREATE_INVENTORY",
+      module: "Inventory",
+      description: `Inventory item created: ${name}`,
+      meta: { inventoryId: item._id, sku }
+    });
+
 
     res.status(201).json(item);
 
@@ -51,20 +61,44 @@ export const getItems = async (req, res) => {
 
 
 
-// UPDATE
 export const updateItem = async (req, res) => {
   const item = await Inventory.findByIdAndUpdate(
     req.params.id,
     req.body,
     { new: true }
   );
+
+  if (!item) {
+      return res.status(404).json({ msg: "Inventory not found" });
+    }
+
+    await logActivity({
+      user: req.user,
+      action: "UPDATE_INVENTORY",
+      module: "Inventory",
+      description: `Inventory item updated: ${item.name}`,
+      meta: { inventoryId: item._id }
+    });
+
   res.json(item);
 };
 
-// DELETE
 export const deleteItem = async (req, res) => {
   await Inventory.findByIdAndDelete(req.params.id);
-  res.json({ msg: "Item deleted" });
+
+  if (!item) {
+      return res.status(404).json({ msg: "Inventory not found" });
+    }
+
+    await logActivity({
+      user: req.user,
+      action: "DELETE_INVENTORY",
+      module: "Inventory",
+      description: `Inventory item deleted: ${item.name}`,
+      meta: { inventoryId: item._id, sku: item.sku }
+    });
+
+  res.json({ msg: "Item deleted successfully" });
 };
 
 

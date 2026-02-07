@@ -8,29 +8,20 @@ export default function AdminNavbar({ open, setOpen }) {
   const isLeadsPage = location.pathname === "/leads";
 
   return (
-    <div className="bg-white shadow px-6 py-4 flex justify-between items-center">
+    <div className="bg-white shadow px-6 py-4 flex justify-between items-center relative">
       <div className="flex items-center gap-4">
 
         <button
-          className="md:hidden p-2 bg-slate-900 text-white rounded"
+          className="md:hidden text-2xl"
           onClick={() => setOpen((prev) => !prev)}
         >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d={open ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
-            />
-          </svg>
+          ☰
         </button>
-         <h1 className="text-xl font-bold">Admin Dashboard</h1>
+        <h1 className="text-xl font-bold">
+          <span className="text-rose-500">C</span>
+          <span className="text-amber-500">R</span>
+          <span className="text-emerald-500">M</span>
+        </h1>
       </div>
 
       <div className="flex items-center gap-4">

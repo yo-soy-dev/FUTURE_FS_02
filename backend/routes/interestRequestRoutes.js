@@ -11,27 +11,15 @@ import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-/**
- * =========================
- * CLIENT ROUTES
- * =========================
- */
 router.post("/request", protect, createInterestRequest);
 
-// Client → inventory me interest mark kare
 router.post(
   "/mark",
   protect,
   markInterest
 );
 
-/**
- * =========================
- * ADMIN ROUTES
- * =========================
- */
 
-// Admin → get all pending interest requests
 router.get(
   "/pending",
   protect,
@@ -39,7 +27,6 @@ router.get(
   getPendingRequests
 );
 
-// Admin → approve request & create/update lead
 router.post(
   "/approve/:id",
   protect,
@@ -47,7 +34,6 @@ router.post(
   approveRequestAndCreateLead
 );
 
-// Admin → reject interest request
 router.post(
   "/reject/:id",
   protect,

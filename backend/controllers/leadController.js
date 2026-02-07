@@ -2,20 +2,16 @@ import InterestRequest from "../models/InterestRequest.js";
 import Inventory from "../models/Inventory.js";
 import Lead from "../models/Lead.js";
 import User from "../models/User.js";
-import mongoose from "mongoose";
+import { logActivity } from "../utils/activityLogger.js";
 
-// Email regex
 const isValidEmail = (email) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
 
-// Allowed status values
 const validStatus = ["New", "Contacted", "Converted", "Rejected"];
 
-// CREATE LEAD
 export const createLead = async (req, res) => {
-  // const session = await mongoose.startSession();
-  // session.startTransaction();
+  
 
   try {
     const { email, source, notes, status } = req.body;
@@ -27,28 +23,21 @@ export const createLead = async (req, res) => {
     }
 
     const inventory = await Inventory.findById(source)
-    // .session(session);
     if (!inventory) return res.status(404).json({ msg: "Inventory not found" });
 
-    // Count all leads for this inventory (New, Contacted, Converted)
     const existingLeadsCount = await Lead.countDocuments({
       source,
       status: { $in: ["New", "Contacted", "Converted"] }
     })
-    // .session(session);
 
     if (existingLeadsCount >= inventory.quantity) {
-      // await session.abortTransaction();
-      // session.endSession();
       return res.status(400).json({ msg: "Inventory fully booked" });
     }
 
 
     const existingLead = await Lead.findOne({ email, source })
-    // .session(session);
     if (existingLead) {
-      // await session.abortTransaction();
-      // session.endSession();
+      
       return res.status(400).json({ msg: "Lead already exists for this inventory" });
     }
 
@@ -62,24 +51,15 @@ export const createLead = async (req, res) => {
         notes,
         status: leadStatus
       }, 
-      // { session }
     );
 
-    // const existingLead = await Lead.findOne({ email, source });
-    // if (existingLead) {
-    //   return res.status(400).json({
-    //     msg: "❌ Lead already exists with this email"
-    //   });
-    // }
-
-    // // 🆕 ONLY create new lead
-    // const lead = await Lead.create({
-    //   name: existingUser.name,
-    //   email,
-    //   source,
-    //   notes,
-    //   status: "New"
-    // });
+    await logActivity({
+  user: req.user || { id: "admin", role: "Admin" },
+  action: "CREATE_LEAD",
+  module: "Lead",
+  description: `Lead created for ${email}`,
+  meta: { inventoryId: source }
+});
 
     res.status(201).json({ msg: "Lead created successfully", lead });
   } catch (err) {
@@ -88,7 +68,6 @@ export const createLead = async (req, res) => {
 };
 
 
-// GET ALL LEADS
 export const getLeads = async (req, res) => {
   try {
     const leads = await Lead.find().sort({ createdAt: -1 });
@@ -99,33 +78,45 @@ export const getLeads = async (req, res) => {
   }
 };
 
-// UPDATE LEAD
-// UPDATE LEAD
+
 export const updateLead = async (req, res) => {
   try {
-    const { name, status } = req.body; // only allow name & status update
+    const { name, status } = req.body; 
     const leadId = req.params.id;
 
     const lead = await Lead.findById(leadId);
     if (!lead) return res.status(404).json({ msg: "Lead not found" });
 
-    // Validate status
     if (status && !validStatus.includes(status)) {
       return res.status(400).json({ msg: "Invalid status value" });
     }
 
-    // Update lead fields
+    const oldStatus = lead.status;
+
     if (name) lead.name = name;
     if (status) lead.status = status;
     await lead.save();
 
-    // Sync Users collection (update name only, email & password untouched)
     if (name) {
       await User.updateOne(
-        { email: lead.email }, // match by email
-        { name }               // update name only
+        { email: lead.email }, 
+        { name }               
       );
     }
+
+    await logActivity({
+      user: req.user,
+      action: "UPDATE_LEAD",
+      module: "Lead",
+      description: status
+        ? `Lead status updated (${oldStatus} → ${status}) for ${lead.email}`
+        : `Lead name updated for ${lead.email}`,
+      meta: {
+        leadId: lead._id,
+        oldStatus,
+        newStatus: status
+      }
+    });
 
     res.json({ msg: "Lead updated successfully", lead });
 
@@ -136,7 +127,6 @@ export const updateLead = async (req, res) => {
 };
 
 
-// DELETE LEAD
 export const deleteLead = async (req, res) => {
   try {
     const lead = await Lead.findByIdAndDelete(req.params.id);
@@ -145,13 +135,23 @@ export const deleteLead = async (req, res) => {
       return res.status(404).json({ msg: "Lead not found" });
     }
 
-    // await lead.deleteOne();
 
-    // 🔥 Related InterestRequest reset कर दो
     await InterestRequest.deleteMany({
       email: lead.email,
       inventory: lead.source
     });
+
+    await logActivity({
+      user: req.user,
+      action: "DELETE_LEAD",
+      module: "Lead",
+      description: `Lead deleted for ${lead.email}`,
+      meta: {
+        leadId: lead._id,
+        inventoryId: lead.source
+      }
+    });
+
 
     res.json({ msg: "Lead deleted & related interest reset successfully" });
 
@@ -175,7 +175,6 @@ export const getLeadByEmail = async (req, res) => {
   }
 };
 
-// GET /leads/inventory/:id
 export const getInterestedUsersByInventory = async (req, res) => {
   const leads = await Lead.find({
     source: req.params.id,

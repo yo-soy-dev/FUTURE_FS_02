@@ -10,15 +10,14 @@ const LeadForm = ({ onClose, refresh, lead, inventoryId }) => {
     source: "",
   });
 
-  const [clients, setClients] = useState([]); // Registered clients for dropdown
+  const [clients, setClients] = useState([]); 
   const [loadingClients, setLoadingClients] = useState(true);
 
-  // Fetch registered clients
   useEffect(() => {
     const fetchClients = async () => {
       try {
         setLoadingClients(true);
-        const res = await api.get("/auth?role=client"); // ✅ Ensure correct endpoint
+        const res = await api.get("/auth?role=client"); 
         setClients(res.data);
       } catch (err) {
         console.error(err);
@@ -30,14 +29,12 @@ const LeadForm = ({ onClose, refresh, lead, inventoryId }) => {
     fetchClients();
   }, []);
 
-  // Set inventoryId as source if creating new lead
   useEffect(() => {
     if (!lead && inventoryId) {
       setFormData(prev => ({ ...prev, source: inventoryId }));
     }
   }, [inventoryId, lead]);
 
-  // Prefill form in edit mode
   useEffect(() => {
     if (lead) {
       setFormData({
@@ -49,11 +46,9 @@ const LeadForm = ({ onClose, refresh, lead, inventoryId }) => {
     }
   }, [lead]);
 
-  // Handle field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Auto-fill name when admin selects email
     if (name === "email") {
       const selectedClient = clients.find(c => c.email === value);
       if (selectedClient) {
@@ -107,7 +102,6 @@ const LeadForm = ({ onClose, refresh, lead, inventoryId }) => {
           {lead ? "Edit Lead" : "Add New Lead"}
         </h2>
 
-        {/* Email dropdown for new lead */}
         {!lead ? (
           <select
             name="email"
@@ -133,7 +127,6 @@ const LeadForm = ({ onClose, refresh, lead, inventoryId }) => {
           />
         )}
 
-        {/* Name field */}
         <input
           name="name"
           placeholder="Client Name"
@@ -141,11 +134,9 @@ const LeadForm = ({ onClose, refresh, lead, inventoryId }) => {
           value={formData.name}
           onChange={handleChange}
           required
-          // ✅ Disabled only when creating new lead, editable in edit mode
           disabled={!lead ? true : false}
         />
 
-        {/* Status dropdown */}
         <select
           name="status"
           className="w-full mb-4 p-2 md:p-3 border rounded text-sm md:text-base"
@@ -158,7 +149,6 @@ const LeadForm = ({ onClose, refresh, lead, inventoryId }) => {
           <option>Rejected</option>
         </select>
 
-        {/* Buttons */}
         <div className="flex flex-col md:flex-row justify-end gap-2 md:gap-3">
           <button
             type="button"

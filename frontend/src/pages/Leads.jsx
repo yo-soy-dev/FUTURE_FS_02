@@ -16,7 +16,6 @@ const Leads = () => {
   const [selectedInventoryId, setSelectedInventoryId] = useState("");
   const [open, setOpen] = useState(false);
 
-  // 🔹 Fetch leads
   const fetchLeads = async () => {
     try {
     const res = await api.get("/leads");
@@ -26,7 +25,6 @@ const Leads = () => {
     }
   };
 
-  // 🔹 Fetch inventories (for dropdown)
   const fetchInventories = async () => {
     try {
     const res = await api.get("/inventory");
@@ -50,7 +48,6 @@ const Leads = () => {
 
         <div className="p-4 md:p-6">
 
-          {/* 🔥 INVENTORY SELECT */}
           <div className="flex flex-col md:flex-row gap-3 mb-4 items-start md:items-center">
             <select
               value={selectedInventoryId}
@@ -65,7 +62,6 @@ const Leads = () => {
               ))}
             </select>
 
-            {/* ➕ ADD LEAD */}
             <button
               onClick={() => {
                 if (!selectedInventoryId) {
@@ -81,12 +77,11 @@ const Leads = () => {
             </button>
           </div>
 
-          {/* 📋 LEAD TABLE */}
           <LeadTable
             leads={leads}
             onEdit={(lead) => {
               setSelectedLead(lead);
-              setSelectedInventoryId(lead.source); // 🔥 important
+              setSelectedInventoryId(lead.source); 
               setShowForm(true);
             }}
             onDelete={async (id) => {
@@ -99,7 +94,6 @@ const Leads = () => {
         </div>
       </div>
 
-      {/* 🧾 LEAD FORM MODAL */}
       {showForm && (
         <LeadForm
           lead={selectedLead}

@@ -12,10 +12,8 @@ import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Client + Admin (lead create)
 router.post("/", protect, adminOnly, createLead);
 
-// Admin only
 router.get("/", protect, adminOnly, getLeads);
 router.put("/:id", protect, adminOnly, updateLead);
 router.delete("/:id", protect, adminOnly, deleteLead);

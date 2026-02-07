@@ -1,12 +1,13 @@
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import { logActivity } from "../utils/activityLogger.js";
 
 export const register = async (req, res) => {
   try {
     console.log("Client register request body:", req.body);
     const { name, email, password, role } = req.body;
-    
+
     if (!name || !email || !password) {
       console.log("Missing fields in register"); // ❌ कोई field missing है
       return res.status(400).json({ msg: "All fields required" });
@@ -26,7 +27,14 @@ export const register = async (req, res) => {
       role
     });
 
-    console.log("User created:", user); 
+    console.log("User created:", user);
+
+    await logActivity({
+      user: user,
+      action: "USER_REGISTER",
+      module: "Auth",
+      description: `New user registered: ${user.email}`
+    });
 
     res.status(201).json({
       id: user._id,
@@ -44,37 +52,36 @@ export const register = async (req, res) => {
 
 
 export const login = async (req, res) => {
-  try{
+  try {
     console.log("Request body:", req.body);
-  const { email, password } = req.body;
+    const { email, password } = req.body;
 
-  const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
-  console.log("Found user:", user);
-  if (!user) return res.status(400).json({ msg: "User not found" });
-  console.log("Comparing password:", password, "with hash:", user.password);
+    const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
+    console.log("Found user:", user);
+    if (!user) return res.status(400).json({ msg: "User not found" });
+    console.log("Comparing password:", password, "with hash:", user.password);
 
-  if (!user.password) return res.status(500).json({ msg: "Password not set for this user" });
+    if (!user.password) return res.status(500).json({ msg: "Password not set for this user" });
 
-  const match = await bcrypt.compare(req.body.password, user.password);
-   console.log("Password match:", match);
-  if (!match) return res.status(400).json({ msg: "Invalid password" });
+    const match = await bcrypt.compare(req.body.password, user.password);
+    console.log("Password match:", match);
+    if (!match) return res.status(400).json({ msg: "Invalid password" });
 
-  const token = jwt.sign(
-    { id: user._id, email: user.email, role: user.role },
-    process.env.JWT_SECRET,
-    { expiresIn: "7d" }
-  );
+    const token = jwt.sign(
+      { id: user._id, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
 
-  // res.json({ token, user });
-  res.json({
-    token,
-    user: {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    },
-  });
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }
