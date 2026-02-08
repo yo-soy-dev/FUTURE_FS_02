@@ -84,7 +84,7 @@ export const updateItem = async (req, res) => {
 };
 
 export const deleteItem = async (req, res) => {
-  await Inventory.findByIdAndDelete(req.params.id);
+  const item = await Inventory.findByIdAndDelete(req.params.id);
 
   if (!item) {
       return res.status(404).json({ msg: "Inventory not found" });
