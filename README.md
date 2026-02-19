@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🚀 FUTURE_FS_02
+# 🚀 OpsPilot – MERN Business Management Platform
 
 ### Full-Stack MERN Web Application
 
@@ -41,7 +41,7 @@
 
 ## 🎯 About the Project
 
-**FUTURE_FS_02** is a comprehensive full-stack web application demonstrating modern web development best practices. Built with the MERN stack (MongoDB, Express.js, React, Node.js), this project showcases a complete **Business Management System** with features including lead tracking, inventory management, customer support ticketing, and interest request handling.
+**OpsPilot – MERN Business Management Platform** is a comprehensive full-stack web application demonstrating modern web development best practices. Built with the MERN stack (MongoDB, Express.js, React, Node.js), this project showcases a complete **Business Management System** with features including lead tracking, inventory management, customer support ticketing, and interest request handling.
 
 The application features **dual dashboards** - one for administrators with full control and analytics, and another for clients with limited, role-specific access. This makes it an ideal foundation for CRM systems, business management platforms, or SaaS applications.
 
